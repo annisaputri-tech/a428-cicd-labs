@@ -11,10 +11,11 @@ node {
     }
 
     stage('Build') {
-        echo 'Building the production-ready React app...'
-        echo 'Build optimized for production. Output saved to /build folder.'
+        steps {
+        // installs project dependencies
+        sh 'npm install' 
+        }
     }
-
     stage('Test') {
         echo 'Executing automated QA tests...'
         echo 'Status: 12 tests passed, 0 failed.'
