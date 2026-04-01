@@ -2,14 +2,16 @@ node {
     stage('Preparation') {
         checkout scm
     }
-    stage('Build') {
-        // installs project dependencies
-        echo 'Installing dependencies now...'
-        sh 'npm install'     
-    }
-    stage('Test') {
-        echo 'Running react test ...'
-        // CI=true tells React to run once and exit, not "watch"
-        sh 'CI=true npm test'
+    dir('a428-cicd-labs') {
+        stage('Build') {
+            // installs project dependencies
+            echo 'Installing dependencies now...'
+            sh 'npm install'     
+        }
+        stage('Test') {
+            echo 'Running react test ...'
+            // CI=true tells React to run once and exit, not "watch"
+            sh 'CI=true npm test'
+        }
     }
 }
