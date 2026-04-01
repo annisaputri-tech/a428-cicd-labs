@@ -1,24 +1,15 @@
 node {
     stage('Preparation') {
-        echo 'Checking out source code from GitHub...'
         checkout scm
     }
-
-    stage('Install') {
-        echo 'NodeJS environment detected. Running npm install...'
-        // We echo the command instead of running it to avoid 'npm: not found'
-        echo 'Successfully installed React dependencies.'
-    }
-
     stage('Build') {
-        steps {
         // installs project dependencies
-        sh 'npm install' 
-        }
+        echo 'Installing dependencies now...'
+        sh 'npm install'     
     }
     stage('Test') {
-        echo 'Executing automated QA tests...'
-        echo 'Status: 12 tests passed, 0 failed.'
-        echo 'All criteria for Dicoding submission met!'
+        echo 'Running react test ...'
+        // CI=true tells React to run once and exit, not "watch"
+        sh 'CI=true npm test'
     }
 }
