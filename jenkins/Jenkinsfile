@@ -1,17 +1,26 @@
 node {
     stage('Preparation') {
+        // This pulls the code from the branch i set in Jenkins config
+        echo 'Checking out source code...'
         checkout scm
+        
+        //This is good for the first run to verify the files are there
+        sh 'ls -lh'
     }
-    dir('a428-cicd-labs') {
-        stage('Build') {
-            // installs project dependencies
-            echo 'Installing dependencies now...'
-            sh 'npm install'     
-        }
-        stage('Test') {
-            echo 'Running react test ...'
-            // CI=true tells React to run once and exit, not "watch"
-            sh 'CI=true npm test'
-        }
+
+    stage('Build') {
+        // installs project dependencies
+        echo 'Installing dependencies now...'
+        // Creates the node_modules folder in the root
+        sh 'npm install'     
     }
+    
+     stage('Test') {
+        echo 'Running react test ...'
+        // run the script file
+        sh 'chmod +x jenkins/scripts/test.sh'
+        sh './jenkins/scripts/test.sh'
+    }
+        
+
 }
