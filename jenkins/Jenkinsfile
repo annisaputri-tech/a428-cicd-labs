@@ -21,6 +21,26 @@ node {
         sh 'chmod +x jenkins/scripts/test.sh'
         sh './jenkins/scripts/test.sh'
     }
+
+    stage('Deploy') {
+        echo 'Starting Deployment...'
+        
+        // 1. Give permission to the new scripts
+        sh 'chmod +x jenkins/scripts/deliver.sh'
+        sh 'chmod +x jenkins/scripts/kill.sh'
+        
+        // 2. Run the delivery script
+        sh './jenkins/scripts/deliver.sh'
+        
+        // 3. Pause and wait for user input (Scripted style)
+        input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)'
+        
+        // 4. Run the kill script after you click Proceed
+        sh './jenkins/scripts/kill.sh'
+        
+        echo 'Deployment finished and process cleaned up.'
+    }
+}
         
 
-}
+
