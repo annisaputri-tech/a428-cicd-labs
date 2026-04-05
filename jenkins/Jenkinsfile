@@ -3,9 +3,7 @@ node {
         // This pulls the code from the branch i set in Jenkins config
         echo 'Checking out source code...'
         checkout scm
-        
-        //This is good for the first run to verify the files are there
-        sh 'ls -lh'
+ 
     }
 
     stage('Build') {
@@ -20,6 +18,12 @@ node {
         // run the script file
         sh 'chmod +x jenkins/scripts/test.sh'
         sh './jenkins/scripts/test.sh'
+    }
+
+    // MANUAL APPROVAL STAGE
+    stage('Manual Approval') {
+        // This creates the gate. If we click Abort, the pipeline stops here.
+        input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed'
     }
 
     stage('Deploy') {
