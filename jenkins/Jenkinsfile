@@ -1,7 +1,4 @@
 node {
-    // We define the tool and the image separately to help Jenkins find 'docker'
-    def dockerTool = tool name: 'docker', type: 'docker'
-
     stage('Preparation') {
         // This pulls the code from the branch i set in Jenkins config
         echo 'Checking out source code...'
