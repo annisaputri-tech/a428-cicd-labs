@@ -1,18 +1,18 @@
 node {
-    /* 1. Define the Docker Image parameter here */
-    docker.image('node:18-alpine').inside {
+    // We define the tool and the image separately to help Jenkins find 'docker'
+    def dockerTool = tool name: 'docker', type: 'docker'
 
-        stage('Preparation') {
-            // This pulls the code from the branch i set in Jenkins config
-            echo 'Checking out source code...'
-            checkout scm
-    
-        }
+    stage('Preparation') {
+        // This pulls the code from the branch i set in Jenkins config
+        echo 'Checking out source code...'
+        checkout scm
+    }
+
+    docker.image('node:18-alpine').inside {  
 
         stage('Build') {
             // installs project dependencies
             echo 'Installing dependencies now...'
-            // Creates the node_modules folder in the root
             sh 'npm install'     
         }
         
@@ -31,22 +31,23 @@ node {
 
         stage('Deploy') {
             echo 'Starting Deployment...'
-            
+    
             // 1. Give permission to the new scripts
             sh 'chmod +x jenkins/scripts/deliver.sh'
             sh 'chmod +x jenkins/scripts/kill.sh'
-            
+
             // 2. Run the delivery script
+            // This runs inside the 'node' container
             sh './jenkins/scripts/deliver.sh'
             
-        // 3.Wait automatically for 1 minute 
+            // 3.Wait automatically for 1 minute 
             echo 'Waiting 1 minute for app testing...'
             sleep time: 1, unit: 'MINUTES'
 
             // 4. Run the kill script to stop the process
             sh './jenkins/scripts/kill.sh'
             
-            echo 'Deployment finished and process cleaned upautomatically'
+            echo 'Deployment finished and process cleaned up automatically'
         }
     }
 }
