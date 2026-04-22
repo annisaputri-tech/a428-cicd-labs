@@ -1,49 +1,53 @@
 node {
-    stage('Preparation') {
-        // This pulls the code from the branch i set in Jenkins config
-        echo 'Checking out source code...'
-        checkout scm
- 
-    }
+    /* 1. Define the Docker Image parameter here */
+    docker.image('node:18-alpine').inside {
 
-    stage('Build') {
-        // installs project dependencies
-        echo 'Installing dependencies now...'
-        // Creates the node_modules folder in the root
-        sh 'npm install'     
-    }
+        stage('Preparation') {
+            // This pulls the code from the branch i set in Jenkins config
+            echo 'Checking out source code...'
+            checkout scm
     
-     stage('Test') {
-        echo 'Running react test ...'
-        // run the script file
-        sh 'chmod +x jenkins/scripts/test.sh'
-        sh './jenkins/scripts/test.sh'
-    }
+        }
 
-    // MANUAL APPROVAL STAGE
-    stage('Manual Approval') {
-        // This creates the gate. If we click Abort, the pipeline stops here.
-        input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed'
-    }
+        stage('Build') {
+            // installs project dependencies
+            echo 'Installing dependencies now...'
+            // Creates the node_modules folder in the root
+            sh 'npm install'     
+        }
+        
+        stage('Test') {
+            echo 'Running react test ...'
+            // run the script file
+            sh 'chmod +x jenkins/scripts/test.sh'
+            sh './jenkins/scripts/test.sh'
+        }
 
-    stage('Deploy') {
-        echo 'Starting Deployment...'
-        
-        // 1. Give permission to the new scripts
-        sh 'chmod +x jenkins/scripts/deliver.sh'
-        sh 'chmod +x jenkins/scripts/kill.sh'
-        
-        // 2. Run the delivery script
-        sh './jenkins/scripts/deliver.sh'
-        
-       // 3.Wait automatically for 1 minute 
-        echo 'Waiting 1 minute for app testing...'
-        sleep time: 1, unit: 'MINUTES'
+        // MANUAL APPROVAL STAGE
+        stage('Manual Approval') {
+            // This creates the gate. If we click Abort, the pipeline stops here.
+            input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed'
+        }
 
-        // 4. Run the kill script to stop the process
-        sh './jenkins/scripts/kill.sh'
-        
-        echo 'Deployment finished and process cleaned upautomatically'
+        stage('Deploy') {
+            echo 'Starting Deployment...'
+            
+            // 1. Give permission to the new scripts
+            sh 'chmod +x jenkins/scripts/deliver.sh'
+            sh 'chmod +x jenkins/scripts/kill.sh'
+            
+            // 2. Run the delivery script
+            sh './jenkins/scripts/deliver.sh'
+            
+        // 3.Wait automatically for 1 minute 
+            echo 'Waiting 1 minute for app testing...'
+            sleep time: 1, unit: 'MINUTES'
+
+            // 4. Run the kill script to stop the process
+            sh './jenkins/scripts/kill.sh'
+            
+            echo 'Deployment finished and process cleaned upautomatically'
+        }
     }
 }
         
